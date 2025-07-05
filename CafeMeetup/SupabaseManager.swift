@@ -59,8 +59,7 @@ class SupabaseManager {
 
         // Decode the response properly
         let data = response.data
-        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
-           let userData = try? JSONDecoder().decode([String: String?].self, from: jsonData) {
+        if let userData = try? JSONDecoder().decode([String: String?].self, from: data) {
             return userData["photo_url"] ?? nil
         }
         
