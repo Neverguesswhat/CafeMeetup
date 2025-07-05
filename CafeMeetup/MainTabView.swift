@@ -8,14 +8,14 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            PlaceholderView(title: "History")
+            HistoryView()
                 .tabItem {
                     Image(systemName: "checklist")
                     Text("History")
                 }
                 .tag(Tab.history)
 
-            PlaceholderView(title: "Black Book")
+            BlackBookView()
                 .tabItem {
                     Image(systemName: "book")
                     Text("Black Book")
@@ -33,7 +33,7 @@ struct MainTabView: View {
             }
             .tag(Tab.meetups)
 
-            PlaceholderView(title: "Messages")
+            MessagesView()
                 .tabItem {
                     Image(systemName: "message")
                     Text("Messages")
