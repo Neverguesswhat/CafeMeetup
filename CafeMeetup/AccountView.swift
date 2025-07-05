@@ -106,7 +106,7 @@ struct AccountView: View {
             
             VStack(spacing: 12) {
                 if let user = currentUser {
-                    InfoRow(title: "Name", value: "\(user.firstName) \(user.lastName)")
+                    InfoRow(title: "Name", value: "\(user.first_name) \(user.last_name)")
                     InfoRow(title: "Email", value: user.email)
                     
                     if let location = user.location {
@@ -279,7 +279,7 @@ struct AccountView: View {
                     userEmail = user.email
                     
                     // Load profile image
-                    if let photoURL = user.photoURL, let url = URL(string: photoURL) {
+                    if let photoURL = user.photo_url, let url = URL(string: photoURL) {
                         let (data, _) = try await URLSession.shared.data(from: url)
                         if let image = UIImage(data: data) {
                             await MainActor.run {
