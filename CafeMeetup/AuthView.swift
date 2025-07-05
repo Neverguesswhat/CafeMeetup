@@ -242,17 +242,17 @@ struct AuthView: View {
                     .execute()
 
                 let data = response.data
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let first = json["first_name"] as? String,
-                   let stat = json["status"] as? String {
-
+                struct LoginUser: Decodable {
+                    let first_name: String
+                    let status: String
+                }
+                if let loginUser = try? JSONDecoder().decode(LoginUser.self, from: data) {
                     await MainActor.run {
-                        firstName = first
-                        userStatus = stat
+                        firstName = loginUser.first_name
+                        userStatus = loginUser.status
                         isLoggedIn = true
                         isLoading = false
                     }
-
                 } else {
                     await MainActor.run {
                         isLoading = false
