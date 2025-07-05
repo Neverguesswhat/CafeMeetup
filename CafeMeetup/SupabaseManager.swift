@@ -354,10 +354,11 @@ class SupabaseManager {
             .eq("user_id", value: userId)
             .single()
             .execute()
-        
         let data = response.data
-        if let count = data["count"] as? Int {
-            return count
+        struct RejectionCountRow: Decodable { let count: Int }
+        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
+           let row = try? JSONDecoder().decode(RejectionCountRow.self, from: jsonData) {
+            return row.count
         }
         return 0
     }
@@ -384,24 +385,26 @@ class SupabaseManager {
             .eq("user_id", value: userId)
             .single()
             .execute()
-        
         let data = response.data
-        if let lastResetString = data["last_reset_date"] as? String,
-           let lastReset = ISO8601DateFormatter().date(from: lastResetString) {
-            let calendar = Calendar.current
-            let daysSinceReset = calendar.dateComponents([.day], from: lastReset, to: Date()).day ?? 0
-            
-            if daysSinceReset >= 1 {
-                struct RejectionCountUpdate: Encodable {
-                    let count: Int
-                    let last_reset_date: String
+        struct LastResetRow: Decodable { let last_reset_date: String }
+        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
+           let row = try? JSONDecoder().decode(LastResetRow.self, from: jsonData) {
+            let lastResetString = row.last_reset_date
+            if let lastReset = ISO8601DateFormatter().date(from: lastResetString) {
+                let calendar = Calendar.current
+                let daysSinceReset = calendar.dateComponents([.day], from: lastReset, to: Date()).day ?? 0
+                if daysSinceReset >= 1 {
+                    struct RejectionCountUpdate: Encodable {
+                        let count: Int
+                        let last_reset_date: String
+                    }
+                    let updateData = RejectionCountUpdate(count: 0, last_reset_date: ISO8601DateFormatter().string(from: Date()))
+                    _ = try await client
+                        .from("rejection_counts")
+                        .update(updateData)
+                        .eq("user_id", value: userId)
+                        .execute()
                 }
-                let updateData = RejectionCountUpdate(count: 0, last_reset_date: ISO8601DateFormatter().string(from: Date()))
-                _ = try await client
-                    .from("rejection_counts")
-                    .update(updateData)
-                    .eq("user_id", value: userId)
-                    .execute()
             }
         }
     }
