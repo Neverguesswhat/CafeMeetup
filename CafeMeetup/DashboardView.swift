@@ -20,42 +20,40 @@ struct DashboardView: View {
     @State private var rejectionCount = 0
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header with user info
-                    headerSection
-                    
-                    // Current status section
-                    statusSection
-                    
-                    // Action buttons based on status
-                    actionButtonsSection
-                    
-                    // Messages section
-                    if !messages.isEmpty {
-                        messagesSection
-                    }
-                    
-                    // Error display
-                    if !errorMessage.isEmpty {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    Spacer(minLength: 40)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header with user info
+                headerSection
+                
+                // Current status section
+                statusSection
+                
+                // Action buttons based on status
+                actionButtonsSection
+                
+                // Messages section
+                if !messages.isEmpty {
+                    messagesSection
                 }
-                .padding()
+                
+                // Error display
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer(minLength: 40)
             }
-            .navigationTitle("Cafe Meetup")
-            .onAppear {
-                loadUserData()
-            }
-            .refreshable {
-                loadUserData()
-            }
+            .padding()
+        }
+        .navigationTitle("Cafe Meetup")
+        .onAppear {
+            loadUserData()
+        }
+        .refreshable {
+            loadUserData()
         }
         .sheet(isPresented: $showDateSelection) {
             DateSelectionView(

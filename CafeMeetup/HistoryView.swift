@@ -15,37 +15,35 @@ struct HistoryView: View {
     }
     
     var body: some View {
-        NavigationView {
-            Group {
-                if isLoading {
-                    ProgressView("Loading history...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if completedDates.isEmpty && ratings.isEmpty {
-                    emptyStateView
-                } else {
-                    historyContentView
-                }
+        Group {
+            if isLoading {
+                ProgressView("Loading history...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if completedDates.isEmpty && ratings.isEmpty {
+                emptyStateView
+            } else {
+                historyContentView
             }
-            .navigationTitle("History")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        ForEach(HistoryFilter.allCases, id: \.self) { filter in
-                            Button(filter.rawValue) {
-                                selectedFilter = filter
-                            }
+        }
+        .navigationTitle("History")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    ForEach(HistoryFilter.allCases, id: \.self) { filter in
+                        Button(filter.rawValue) {
+                            selectedFilter = filter
                         }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
                     }
+                } label: {
+                    Image(systemName: "line.3.horizontal.decrease.circle")
                 }
             }
-            .onAppear {
-                loadHistory()
-            }
-            .refreshable {
-                loadHistory()
-            }
+        }
+        .onAppear {
+            loadHistory()
+        }
+        .refreshable {
+            loadHistory()
         }
     }
     

@@ -15,50 +15,48 @@ struct AccountView: View {
     @State private var tempBio = ""
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Profile Photo Section
-                    profilePhotoSection
-                    
-                    // User Info Section
-                    userInfoSection
-                    
-                    // Settings Section
-                    settingsSection
-                    
-                    // Log Out Section
-                    logOutSection
-                    
-                    if !errorMessage.isEmpty {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    Spacer(minLength: 40)
+        ScrollView {
+            VStack(spacing: 24) {
+                // Profile Photo Section
+                profilePhotoSection
+                
+                // User Info Section
+                userInfoSection
+                
+                // Settings Section
+                settingsSection
+                
+                // Log Out Section
+                logOutSection
+                
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
                 }
-                .padding()
+                
+                Spacer(minLength: 40)
             }
-            .navigationTitle("Account")
-            .onAppear {
-                loadUserData()
+            .padding()
+        }
+        .navigationTitle("Account")
+        .onAppear {
+            loadUserData()
+        }
+        .sheet(isPresented: $showPhotoPicker) {
+            PhotoPicker(selectedImage: $profileImage) { image in
+                uploadProfileImage(image)
             }
-            .sheet(isPresented: $showPhotoPicker) {
-                PhotoPicker(selectedImage: $profileImage) { image in
-                    uploadProfileImage(image)
-                }
+        }
+        .sheet(isPresented: $showLocationPicker) {
+            LocationPickerView(location: $tempLocation) { location in
+                updateUserLocation(location)
             }
-            .sheet(isPresented: $showLocationPicker) {
-                LocationPickerView(location: $tempLocation) { location in
-                    updateUserLocation(location)
-                }
-            }
-            .sheet(isPresented: $showBioEditor) {
-                BioEditorView(bio: $tempBio) { bio in
-                    updateUserBio(bio)
-                }
+        }
+        .sheet(isPresented: $showBioEditor) {
+            BioEditorView(bio: $tempBio) { bio in
+                updateUserBio(bio)
             }
         }
     }

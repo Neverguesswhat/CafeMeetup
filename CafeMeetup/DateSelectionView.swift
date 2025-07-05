@@ -56,82 +56,80 @@ struct DateSelectionView: View {
     ]
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("Select 3 Date Options")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Choose 3 different dates and venues for your match to pick from. Dates must be within the next 3 days.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(spacing: 8) {
+                    Text("Select 3 Date Options")
+                        .font(.title2)
+                        .fontWeight(.bold)
                     
-                    // Date 1
-                    DateOptionCard(
-                        title: "Date Option 1",
-                        dateOption: $date1,
-                        venueOptions: venueOptions,
-                        selectedVenueIndex: $selectedVenueIndex
-                    )
-                    
-                    // Date 2
-                    DateOptionCard(
-                        title: "Date Option 2",
-                        dateOption: $date2,
-                        venueOptions: venueOptions,
-                        selectedVenueIndex: $selectedVenueIndex
-                    )
-                    
-                    // Date 3
-                    DateOptionCard(
-                        title: "Date Option 3",
-                        dateOption: $date3,
-                        venueOptions: venueOptions,
-                        selectedVenueIndex: $selectedVenueIndex
-                    )
-                    
-                    // Submit Button
-                    Button(action: submitDateProposal) {
-                        HStack {
-                            if isLoading {
-                                ProgressView()
-                                    .scaleEffect(0.8)
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            }
-                            Text("Submit Date Options")
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(isLoading ? Color.gray : Color.blue)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                    }
-                    .disabled(isLoading || !isValidProposal)
-                    
-                    if !errorMessage.isEmpty {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    Spacer(minLength: 40)
+                    Text("Choose 3 different dates and venues for your match to pick from. Dates must be within the next 3 days.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
                 .padding()
-            }
-            .navigationTitle("Date Selection")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                
+                // Date 1
+                DateOptionCard(
+                    title: "Date Option 1",
+                    dateOption: $date1,
+                    venueOptions: venueOptions,
+                    selectedVenueIndex: $selectedVenueIndex
+                )
+                
+                // Date 2
+                DateOptionCard(
+                    title: "Date Option 2",
+                    dateOption: $date2,
+                    venueOptions: venueOptions,
+                    selectedVenueIndex: $selectedVenueIndex
+                )
+                
+                // Date 3
+                DateOptionCard(
+                    title: "Date Option 3",
+                    dateOption: $date3,
+                    venueOptions: venueOptions,
+                    selectedVenueIndex: $selectedVenueIndex
+                )
+                
+                // Submit Button
+                Button(action: submitDateProposal) {
+                    HStack {
+                        if isLoading {
+                            ProgressView()
+                                .scaleEffect(0.8)
+                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                        }
+                        Text("Submit Date Options")
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(isLoading ? Color.gray : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                }
+                .disabled(isLoading || !isValidProposal)
+                
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer(minLength: 40)
+            }
+            .padding()
+        }
+        .navigationTitle("Date Selection")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
         }

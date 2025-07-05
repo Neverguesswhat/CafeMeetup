@@ -10,52 +10,50 @@ struct BlackBookView: View {
     @State private var currentUser: User?
     
     var body: some View {
-        NavigationView {
-            Group {
-                if isLoading {
-                    ProgressView("Loading contacts...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if blackBookEntries.isEmpty {
-                    emptyStateView
-                } else {
-                    contactsListView
-                }
+        Group {
+            if isLoading {
+                ProgressView("Loading contacts...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if blackBookEntries.isEmpty {
+                emptyStateView
+            } else {
+                contactsListView
             }
-            .navigationTitle("Black Book")
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: {
-                            showAddContact = true
-                        }) {
-                            Label("Add Contact", systemImage: "person.badge.plus")
-                        }
-                        
-                        Button(action: {
-                            showQRScanner = true
-                        }) {
-                            Label("Scan QR Code", systemImage: "qrcode.viewfinder")
-                        }
-                    } label: {
-                        Image(systemName: "plus")
+        }
+        .navigationTitle("Black Book")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    Button(action: {
+                        showAddContact = true
+                    }) {
+                        Label("Add Contact", systemImage: "person.badge.plus")
                     }
+                    
+                    Button(action: {
+                        showQRScanner = true
+                    }) {
+                        Label("Scan QR Code", systemImage: "qrcode.viewfinder")
+                    }
+                } label: {
+                    Image(systemName: "plus")
                 }
             }
-            .onAppear {
-                loadBlackBookEntries()
+        }
+        .onAppear {
+            loadBlackBookEntries()
+        }
+        .refreshable {
+            loadBlackBookEntries()
+        }
+        .sheet(isPresented: $showAddContact) {
+            AddContactView { contact in
+                addContact(contact)
             }
-            .refreshable {
-                loadBlackBookEntries()
-            }
-            .sheet(isPresented: $showAddContact) {
-                AddContactView { contact in
-                    addContact(contact)
-                }
-            }
-            .sheet(isPresented: $showQRScanner) {
-                QRScannerView { scannedData in
-                    handleScannedData(scannedData)
-                }
+        }
+        .sheet(isPresented: $showQRScanner) {
+            QRScannerView { scannedData in
+                handleScannedData(scannedData)
             }
         }
     }

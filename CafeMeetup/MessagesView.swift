@@ -9,29 +9,27 @@ struct MessagesView: View {
     @State private var showMessageDetail = false
     
     var body: some View {
-        NavigationView {
-            Group {
-                if isLoading {
-                    ProgressView("Loading messages...")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else if messages.isEmpty {
-                    emptyStateView
-                } else {
-                    messagesListView
-                }
+        Group {
+            if isLoading {
+                ProgressView("Loading messages...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if messages.isEmpty {
+                emptyStateView
+            } else {
+                messagesListView
             }
-            .navigationTitle("Messages")
-            .onAppear {
-                loadMessages()
-            }
-            .refreshable {
-                loadMessages()
-            }
-            .sheet(isPresented: $showMessageDetail) {
-                if let message = selectedMessage {
-                    MessageDetailView(message: message) {
-                        markMessageAsRead(messageId: message.id)
-                    }
+        }
+        .navigationTitle("Messages")
+        .onAppear {
+            loadMessages()
+        }
+        .refreshable {
+            loadMessages()
+        }
+        .sheet(isPresented: $showMessageDetail) {
+            if let message = selectedMessage {
+                MessageDetailView(message: message) {
+                    markMessageAsRead(messageId: message.id)
                 }
             }
         }

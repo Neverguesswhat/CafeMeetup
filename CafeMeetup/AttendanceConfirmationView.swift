@@ -16,63 +16,61 @@ struct AttendanceConfirmationView: View {
     @State private var currentUser: User?
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Header
-                    VStack(spacing: 8) {
-                        Text("Confirm Attendance")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        
-                        Text("Confirm that you'll attend your scheduled date and verify you actually met.")
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
+        ScrollView {
+            VStack(spacing: 24) {
+                // Header
+                VStack(spacing: 8) {
+                    Text("Confirm Attendance")
+                        .font(.title2)
+                        .fontWeight(.bold)
                     
-                    // Date Details
-                    dateDetailsSection
-                    
-                    // Attendance Confirmation
-                    attendanceConfirmationSection
-                    
-                    // Code Entry (if needed)
-                    if showCodeEntry {
-                        codeEntrySection
-                    }
-                    
-                    // QR Code Scanner
-                    if showQRScanner {
-                        qrScannerSection
-                    }
-                    
-                    // Error display
-                    if !errorMessage.isEmpty {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                            .multilineTextAlignment(.center)
-                    }
-                    
-                    Spacer(minLength: 40)
+                    Text("Confirm that you'll attend your scheduled date and verify you actually met.")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
                 }
                 .padding()
+                
+                // Date Details
+                dateDetailsSection
+                
+                // Attendance Confirmation
+                attendanceConfirmationSection
+                
+                // Code Entry (if needed)
+                if showCodeEntry {
+                    codeEntrySection
+                }
+                
+                // QR Code Scanner
+                if showQRScanner {
+                    qrScannerSection
+                }
+                
+                // Error display
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                }
+                
+                Spacer(minLength: 40)
             }
-            .navigationTitle("Attendance")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+            .padding()
+        }
+        .navigationTitle("Attendance")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
-            .onAppear {
-                loadCurrentUser()
-                createAttendanceRecord()
-            }
+        }
+        .onAppear {
+            loadCurrentUser()
+            createAttendanceRecord()
         }
     }
     
