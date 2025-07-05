@@ -80,6 +80,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode(User.self, from: data)
     }
     
@@ -112,6 +113,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode([User].self, from: data)
     }
     
@@ -131,6 +133,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode(Match.self, from: data)
     }
     
@@ -153,6 +156,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode([Match].self, from: data)
     }
 
@@ -183,6 +187,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode(DateProposal.self, from: data)
     }
     
@@ -223,6 +228,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode(Attendance.self, from: data)
     }
     
@@ -296,6 +302,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode([BlackBookEntry].self, from: data)
     }
 
@@ -325,6 +332,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         return try JSONDecoder().decode([Message].self, from: data)
     }
     
@@ -346,6 +354,7 @@ class SupabaseManager {
             .single()
             .execute()
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         struct RejectionCountRow: Decodable { let count: Int }
         if let row = try? JSONDecoder().decode(RejectionCountRow.self, from: data) {
             return row.count
@@ -376,6 +385,7 @@ class SupabaseManager {
             .single()
             .execute()
         let data = response.data
+        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
         struct LastResetRow: Decodable { let last_reset_date: String }
         if let row = try? JSONDecoder().decode(LastResetRow.self, from: data) {
             let lastResetString = row.last_reset_date

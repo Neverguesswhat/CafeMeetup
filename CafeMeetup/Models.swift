@@ -4,18 +4,18 @@ import SwiftUI
 // MARK: - User Model
 struct User: Identifiable, Codable {
     let id: String
+    let first_name: String
+    let last_name: String
     let email: String
-    let firstName: String
-    let lastName: String
-    let status: UserStatus
-    let photoURL: String?
+    let created_at: String
+    let status: String
+    let photo_url: String?
     let location: String?
     let bio: String?
-    let createdAt: Date
-    let lastActiveAt: Date
+    let last_active_at: Date
     
     enum CodingKeys: String, CodingKey {
-        case id, email, firstName = "first_name", lastName = "last_name", status, photoURL = "photo_url", location, bio, createdAt = "created_at", lastActiveAt = "last_active_at"
+        case id, first_name, last_name, email, created_at, status, photo_url, location, bio, last_active_at
     }
 }
 
