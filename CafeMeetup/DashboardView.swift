@@ -80,7 +80,7 @@ struct DashboardView: View {
     // MARK: - Header Section
     private var headerSection: some View {
         VStack(spacing: 12) {
-            if let user = currentUser, let photoURL = user.photoURL, let url = URL(string: photoURL) {
+            if let user = currentUser, let photoURL = user.photo_url, let url = URL(string: photoURL) {
                 AsyncImage(url: url) { image in
                     image
                         .resizable()
@@ -437,7 +437,7 @@ struct DashboardView: View {
                     try await SupabaseManager.shared.resetRejectionCountIfNeeded(for: user.id)
                     
                     // Load available users if chooser
-                    if user.status == .chooser {
+                    if user.status == "chooser" {
                         availableUsers = try await SupabaseManager.shared.getAvailableChosenUsers(for: user.email)
                     }
                     
@@ -505,7 +505,7 @@ struct DashboardView: View {
                 try await SupabaseManager.shared.createMessage(
                     userId: user.id,
                     title: "You've been chosen!",
-                    body: "\(currentUser.firstName) has chosen you for a potential meetup. Check your dashboard to accept or reject.",
+                    body: "\(currentUser.first_name) has chosen you for a potential meetup. Check your dashboard to accept or reject.",
                     type: .match
                 )
                 
@@ -580,7 +580,7 @@ struct UserProfileCard: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
-                if let photoURL = user.photoURL, let url = URL(string: photoURL) {
+                if let photoURL = user.photo_url, let url = URL(string: photoURL) {
                     AsyncImage(url: url) { image in
                         image
                             .resizable()
@@ -601,7 +601,7 @@ struct UserProfileCard: View {
                 }
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("\(user.firstName) \(user.lastName)")
+                    Text("\(user.first_name) \(user.last_name)")
                         .font(.headline)
                         .foregroundColor(.primary)
                     
