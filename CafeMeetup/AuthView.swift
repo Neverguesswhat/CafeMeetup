@@ -180,7 +180,7 @@ struct AuthView: View {
                     password: password
                 )
 
-                let userId = authResponse.user.id
+                let userId = authResponse.user.id.uuidString
                 let _ = try await SupabaseManager.shared.client
                     .from("users")
                     .insert([
