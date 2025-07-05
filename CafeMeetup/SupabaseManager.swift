@@ -10,6 +10,7 @@ class SupabaseManager {
     let client: SupabaseClient
 
     private init() {
+        // TODO: Replace with proper environment variable or configuration
         client = SupabaseClient(
             supabaseURL: URL(string: "https://lhtudqxldzwloyyxgvrx.supabase.co")!,
             supabaseKey: "your-key-here"
@@ -17,7 +18,7 @@ class SupabaseManager {
     }
 
     // ✅ Upload profile image and store public URL
-    func uploadProfileImage(_ image: UIImage, email: String) async throws -> String {
+    func uploadProfileImage(_ image: UIImage, for email: String) async throws -> String {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "ImageError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image conversion failed"])
         }
@@ -47,17 +48,20 @@ class SupabaseManager {
 
     // ✅ Fetch stored photo URL
     func fetchUserPhotoURL(for email: String) async throws -> String? {
-        struct UserPhoto: Decodable {
-            let photo_url: String?
-        }
-
         let response = try await client
             .from("users")
             .select("photo_url")
             .eq("email", value: email)
             .single()
-            .value as? [String: Any]
+            .execute()
 
-        return response?["photo_url"] as? String
+        // Decode the response properly
+        let data = response.data
+        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
+           let userData = try? JSONDecoder().decode([String: String?].self, from: jsonData) {
+            return userData["photo_url"] ?? nil
+        }
+        
+        return nil
     }
 }
