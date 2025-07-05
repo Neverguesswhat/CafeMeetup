@@ -180,14 +180,18 @@ struct AuthView: View {
                     password: password
                 )
 
+                let userId = authResponse.user.id
                 let _ = try await SupabaseManager.shared.client
                     .from("users")
                     .insert([
-                        "id": authResponse.user.id.uuidString,
+                        "id": userId,
                         "email": trimmedEmail,
                         "first_name": trimmedFirstName,
                         "last_name": trimmedLastName,
-                        "status": "default"
+                        "status": "default",
+                        "photo_url": nil,
+                        "location": nil,
+                        "bio": nil
                     ])
                     .execute()
 
