@@ -38,9 +38,10 @@ class SupabaseManager {
         let publicURL = "https://lhtudqxldzwloyyxgvrx.supabase.co/storage/v1/object/public/profile-photos/\(fileName)"
 
         // ✅ Save the URL in the users table
+        struct UpdatePhoto: Encodable { let photo_url: String }
         _ = try await client
             .from("users")
-            .update(["photo_url": publicURL])
+            .update(UpdatePhoto(photo_url: publicURL))
             .eq("email", value: email)
             .execute()
 
@@ -85,17 +86,19 @@ class SupabaseManager {
     }
     
     func updateUserStatus(_ status: UserStatus, for email: String) async throws {
+        struct UpdateStatus: Encodable { let status: String }
         _ = try await client
             .from("users")
-            .update(["status": status.rawValue])
+            .update(UpdateStatus(status: status.rawValue))
             .eq("email", value: email)
             .execute()
     }
     
     func updateUserLocation(_ location: String, for email: String) async throws {
+        struct UpdateLocation: Encodable { let location: String }
         _ = try await client
             .from("users")
-            .update(["location": location])
+            .update(UpdateLocation(location: location))
             .eq("email", value: email)
             .execute()
     }
@@ -116,11 +119,12 @@ class SupabaseManager {
     }
     
     func createMatch(chooserId: String, chosenId: String) async throws -> Match {
-        let matchData: [String: Any] = [
-            "chooser_id": chooserId,
-            "chosen_id": chosenId,
-            "status": MatchStatus.pending.rawValue
-        ]
+        struct MatchInsert: Encodable {
+            let chooser_id: String
+            let chosen_id: String
+            let status: String
+        }
+        let matchData = MatchInsert(chooser_id: chooserId, chosen_id: chosenId, status: MatchStatus.pending.rawValue)
         
         let response = try await client
             .from("matches")
@@ -135,10 +139,11 @@ class SupabaseManager {
     }
     
     func respondToMatch(matchId: String, accepted: Bool) async throws {
+        struct UpdateMatch: Encodable { let status: String }
         let status = accepted ? MatchStatus.accepted.rawValue : MatchStatus.rejected.rawValue
         _ = try await client
             .from("matches")
-            .update(["status": status])
+            .update(UpdateMatch(status: status))
             .eq("id", value: matchId)
             .execute()
     }
@@ -158,14 +163,22 @@ class SupabaseManager {
 
     // MARK: - Date Proposals
     func createDateProposal(matchId: String, proposerId: String, date1: DateOption, date2: DateOption, date3: DateOption) async throws -> DateProposal {
-        let dateData: [String: Any] = [
-            "match_id": matchId,
-            "proposer_id": proposerId,
-            "date1": try JSONSerialization.jsonObject(with: JSONEncoder().encode(date1)),
-            "date2": try JSONSerialization.jsonObject(with: JSONEncoder().encode(date2)),
-            "date3": try JSONSerialization.jsonObject(with: JSONEncoder().encode(date3)),
-            "status": DateStatus.proposed.rawValue
-        ]
+        struct DateProposalInsert: Encodable {
+            let match_id: String
+            let proposer_id: String
+            let date1: DateOption
+            let date2: DateOption
+            let date3: DateOption
+            let status: String
+        }
+        let dateData = DateProposalInsert(
+            match_id: matchId,
+            proposer_id: proposerId,
+            date1: date1,
+            date2: date2,
+            date3: date3,
+            status: DateStatus.proposed.rawValue
+        )
         
         let response = try await client
             .from("date_proposals")
@@ -180,34 +193,33 @@ class SupabaseManager {
     }
     
     func selectDate(dateProposalId: String, selectedIndex: Int) async throws {
+        struct UpdateDate: Encodable { let selected_date_index: Int; let status: String }
         _ = try await client
             .from("date_proposals")
-            .update([
-                "selected_date_index": selectedIndex,
-                "status": DateStatus.selected.rawValue
-            ])
+            .update(UpdateDate(selected_date_index: selectedIndex, status: DateStatus.selected.rawValue))
             .eq("id", value: dateProposalId)
             .execute()
     }
     
     func confirmDate(dateProposalId: String) async throws {
+        struct UpdateDate: Encodable { let status: String }
         _ = try await client
             .from("date_proposals")
-            .update(["status": DateStatus.confirmed.rawValue])
+            .update(UpdateDate(status: DateStatus.confirmed.rawValue))
             .eq("id", value: dateProposalId)
             .execute()
     }
 
     // MARK: - Attendance Tracking
     func createAttendanceRecord(dateId: String, userId: String) async throws -> Attendance {
+        struct AttendanceInsert: Encodable {
+            let date_id: String
+            let user_id: String
+            let confirmed: Bool
+            let confirmation_code: String
+        }
         let confirmationCode = String(format: "%04d", Int.random(in: 1000...9999))
-        
-        let attendanceData: [String: Any] = [
-            "date_id": dateId,
-            "user_id": userId,
-            "confirmed": false,
-            "confirmation_code": confirmationCode
-        ]
+        let attendanceData = AttendanceInsert(date_id: dateId, user_id: userId, confirmed: false, confirmation_code: confirmationCode)
         
         let response = try await client
             .from("attendance")
@@ -222,12 +234,10 @@ class SupabaseManager {
     }
     
     func confirmAttendance(attendanceId: String) async throws {
+        struct UpdateAttendance: Encodable { let confirmed: Bool; let confirmed_at: String }
         _ = try await client
             .from("attendance")
-            .update([
-                "confirmed": true,
-                "confirmed_at": ISO8601DateFormatter().string(from: Date())
-            ])
+            .update(UpdateAttendance(confirmed: true, confirmed_at: ISO8601DateFormatter().string(from: Date())))
             .eq("id", value: attendanceId)
             .execute()
     }
@@ -245,12 +255,13 @@ class SupabaseManager {
 
     // MARK: - Rating System
     func rateDate(dateId: String, raterId: String, ratedId: String, wouldMeetAgain: Bool) async throws {
-        let ratingData: [String: Any] = [
-            "date_id": dateId,
-            "rater_id": raterId,
-            "rated_id": ratedId,
-            "would_meet_again": wouldMeetAgain
-        ]
+        struct RatingInsert: Encodable {
+            let date_id: String
+            let rater_id: String
+            let rated_id: String
+            let would_meet_again: Bool
+        }
+        let ratingData = RatingInsert(date_id: dateId, rater_id: raterId, rated_id: ratedId, would_meet_again: wouldMeetAgain)
         
         _ = try await client
             .from("ratings")
@@ -260,14 +271,22 @@ class SupabaseManager {
 
     // MARK: - Black Book
     func addToBlackBook(userId: String, contactId: String, contactName: String, contactEmail: String?, contactPhone: String?, notes: String?) async throws {
-        let blackBookData: [String: Any] = [
-            "user_id": userId,
-            "contact_id": contactId,
-            "contact_name": contactName,
-            "contact_email": contactEmail,
-            "contact_phone": contactPhone,
-            "notes": notes
-        ]
+        struct BlackBookInsert: Encodable {
+            let user_id: String
+            let contact_id: String
+            let contact_name: String
+            let contact_email: String?
+            let contact_phone: String?
+            let notes: String?
+        }
+        let blackBookData = BlackBookInsert(
+            user_id: userId,
+            contact_id: contactId,
+            contact_name: contactName,
+            contact_email: contactEmail,
+            contact_phone: contactPhone,
+            notes: notes
+        )
         
         _ = try await client
             .from("black_book")
@@ -290,13 +309,14 @@ class SupabaseManager {
 
     // MARK: - Messaging
     func createMessage(userId: String, title: String, body: String, type: MessageType) async throws {
-        let messageData: [String: Any] = [
-            "user_id": userId,
-            "title": title,
-            "body": body,
-            "type": type.rawValue,
-            "read": false
-        ]
+        struct MessageInsert: Encodable {
+            let user_id: String
+            let title: String
+            let body: String
+            let type: String
+            let read: Bool
+        }
+        let messageData = MessageInsert(user_id: userId, title: title, body: body, type: type.rawValue, read: false)
         
         _ = try await client
             .from("messages")
@@ -318,9 +338,10 @@ class SupabaseManager {
     }
     
     func markMessageAsRead(messageId: String) async throws {
+        struct UpdateMessage: Encodable { let read: Bool }
         _ = try await client
             .from("messages")
-            .update(["read": true])
+            .update(UpdateMessage(read: true))
             .eq("id", value: messageId)
             .execute()
     }
@@ -342,16 +363,17 @@ class SupabaseManager {
     }
     
     func incrementRejectionCount(for userId: String) async throws {
+        struct RejectionCountUpsert: Encodable {
+            let user_id: String
+            let count: Int
+            let last_reset_date: String
+        }
         let currentCount = try await getRejectionCount(for: userId)
         let newCount = currentCount + 1
-        
+        let upsertData = RejectionCountUpsert(user_id: userId, count: newCount, last_reset_date: ISO8601DateFormatter().string(from: Date()))
         _ = try await client
             .from("rejection_counts")
-            .upsert([
-                "user_id": userId,
-                "count": newCount,
-                "last_reset_date": ISO8601DateFormatter().string(from: Date())
-            ])
+            .upsert(upsertData)
             .execute()
     }
     
@@ -370,12 +392,14 @@ class SupabaseManager {
             let daysSinceReset = calendar.dateComponents([.day], from: lastReset, to: Date()).day ?? 0
             
             if daysSinceReset >= 1 {
+                struct RejectionCountUpdate: Encodable {
+                    let count: Int
+                    let last_reset_date: String
+                }
+                let updateData = RejectionCountUpdate(count: 0, last_reset_date: ISO8601DateFormatter().string(from: Date()))
                 _ = try await client
                     .from("rejection_counts")
-                    .update([
-                        "count": 0,
-                        "last_reset_date": ISO8601DateFormatter().string(from: Date())
-                    ])
+                    .update(updateData)
                     .eq("user_id", value: userId)
                     .execute()
             }
