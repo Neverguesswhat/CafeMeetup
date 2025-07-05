@@ -87,13 +87,13 @@ struct DateProposal: Identifiable, Codable {
 }
 
 struct DateOption: Codable {
-    let date: Date
-    let time: Date
-    let location: String
-    let venueName: String
-    let address: String
-    let latitude: Double?
-    let longitude: Double?
+    var date: Date
+    var time: Date
+    var location: String
+    var venueName: String
+    var address: String
+    var latitude: Double?
+    var longitude: Double?
     
     var fullDateTime: Date {
         let calendar = Calendar.current
