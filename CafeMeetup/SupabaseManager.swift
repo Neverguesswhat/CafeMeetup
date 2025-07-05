@@ -81,8 +81,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode(User.self, from: jsonData)
+        return try JSONDecoder().decode(User.self, from: data)
     }
     
     func updateUserStatus(_ status: UserStatus, for email: String) async throws {
@@ -114,8 +113,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode([User].self, from: jsonData)
+        return try JSONDecoder().decode([User].self, from: data)
     }
     
     func createMatch(chooserId: String, chosenId: String) async throws -> Match {
@@ -134,8 +132,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode(Match.self, from: jsonData)
+        return try JSONDecoder().decode(Match.self, from: data)
     }
     
     func respondToMatch(matchId: String, accepted: Bool) async throws {
@@ -157,8 +154,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode([Match].self, from: jsonData)
+        return try JSONDecoder().decode([Match].self, from: data)
     }
 
     // MARK: - Date Proposals
@@ -188,8 +184,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode(DateProposal.self, from: jsonData)
+        return try JSONDecoder().decode(DateProposal.self, from: data)
     }
     
     func selectDate(dateProposalId: String, selectedIndex: Int) async throws {
@@ -229,8 +224,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode(Attendance.self, from: jsonData)
+        return try JSONDecoder().decode(Attendance.self, from: data)
     }
     
     func confirmAttendance(attendanceId: String) async throws {
@@ -303,8 +297,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode([BlackBookEntry].self, from: jsonData)
+        return try JSONDecoder().decode([BlackBookEntry].self, from: data)
     }
 
     // MARK: - Messaging
@@ -333,8 +326,7 @@ class SupabaseManager {
             .execute()
         
         let data = response.data
-        let jsonData = try JSONSerialization.data(withJSONObject: data)
-        return try JSONDecoder().decode([Message].self, from: jsonData)
+        return try JSONDecoder().decode([Message].self, from: data)
     }
     
     func markMessageAsRead(messageId: String) async throws {
@@ -356,8 +348,7 @@ class SupabaseManager {
             .execute()
         let data = response.data
         struct RejectionCountRow: Decodable { let count: Int }
-        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
-           let row = try? JSONDecoder().decode(RejectionCountRow.self, from: jsonData) {
+        if let row = try? JSONDecoder().decode(RejectionCountRow.self, from: data) {
             return row.count
         }
         return 0
@@ -387,8 +378,7 @@ class SupabaseManager {
             .execute()
         let data = response.data
         struct LastResetRow: Decodable { let last_reset_date: String }
-        if let jsonData = try? JSONSerialization.data(withJSONObject: data),
-           let row = try? JSONDecoder().decode(LastResetRow.self, from: jsonData) {
+        if let row = try? JSONDecoder().decode(LastResetRow.self, from: data) {
             let lastResetString = row.last_reset_date
             if let lastReset = ISO8601DateFormatter().date(from: lastResetString) {
                 let calendar = Calendar.current
