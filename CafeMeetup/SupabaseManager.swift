@@ -26,7 +26,6 @@ class SupabaseManager {
 
         let fileName = email.replacingOccurrences(of: "@", with: "_").replacingOccurrences(of: ".", with: "_") + ".jpg"
 
-        // ✅ Use correct .upload(file:) method (no path:) — it's renamed
         _ = try await client.storage
             .from("profile-photos")
             .upload(
@@ -37,12 +36,15 @@ class SupabaseManager {
 
         let publicURL = "https://lhtudqxldzwloyyxgvrx.supabase.co/storage/v1/object/public/profile-photos/\(fileName)"
 
-        // ✅ Save the URL in the users table
+        // Fetch the current user's id (Auth UID as String)
+        guard let userId = try await client.auth.session.user.id?.uuidString else {
+            throw NSError(domain: "AuthError", code: 0, userInfo: [NSLocalizedDescriptionKey: "User not authenticated"])
+        }
         struct UpdatePhoto: Encodable { let photo_url: String }
         _ = try await client
             .from("users")
             .update(UpdatePhoto(photo_url: publicURL))
-            .eq("email", value: email)
+            .eq("id", value: userId)
             .execute()
 
         return publicURL
