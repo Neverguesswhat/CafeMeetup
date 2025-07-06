@@ -436,23 +436,41 @@ struct DashboardView: View {
                 currentUser = try await SupabaseManager.shared.getCurrentUser()
                 print("[DEBUG] Loaded user: \(String(describing: currentUser))")
                 
-                // Load rejection count
                 if let user = currentUser {
-                    rejectionCount = try await SupabaseManager.shared.getRejectionCount(for: user.id)
-                    try await SupabaseManager.shared.resetRejectionCountIfNeeded(for: user.id)
-                    
-                    // Load available users if chooser
-                    if user.status == "chooser" {
-                        availableUsers = try await SupabaseManager.shared.getAvailableChosenUsers(for: user.email)
+                    do {
+                        rejectionCount = try await SupabaseManager.shared.getRejectionCount(for: user.id)
+                    } catch {
+                        print("[DEBUG] Error loading rejectionCount: \(error)")
+                        rejectionCount = 0
                     }
-                    
-                    // Load pending matches
-                    pendingMatches = try await SupabaseManager.shared.getPendingMatches(for: user.id)
-                    
-                    // Load messages
-                    messages = try await SupabaseManager.shared.getMessages(for: user.id)
+                    do {
+                        try await SupabaseManager.shared.resetRejectionCountIfNeeded(for: user.id)
+                    } catch {
+                        print("[DEBUG] Error resetting rejectionCount: \(error)")
+                    }
+                    do {
+                        if user.status == "chooser" {
+                            availableUsers = try await SupabaseManager.shared.getAvailableChosenUsers(for: user.email)
+                        } else {
+                            availableUsers = []
+                        }
+                    } catch {
+                        print("[DEBUG] Error loading availableUsers: \(error)")
+                        availableUsers = []
+                    }
+                    do {
+                        pendingMatches = try await SupabaseManager.shared.getPendingMatches(for: user.id)
+                    } catch {
+                        print("[DEBUG] Error loading pendingMatches: \(error)")
+                        pendingMatches = []
+                    }
+                    do {
+                        messages = try await SupabaseManager.shared.getMessages(for: user.id)
+                    } catch {
+                        print("[DEBUG] Error loading messages: \(error)")
+                        messages = []
+                    }
                 }
-                
                 await MainActor.run {
                     isLoading = false
                 }

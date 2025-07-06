@@ -225,7 +225,7 @@ class SupabaseManager {
     }
 
     // MARK: - Attendance Tracking
-    func createAttendanceRecord(dateId: String, userId: String) async throws -> Attendance {
+    func createAttendanceRecord(dateId: String, userId: String) async throws -> Attendance? {
         struct AttendanceInsert: Encodable {
             let date_id: String
             let user_id: String
@@ -234,17 +234,20 @@ class SupabaseManager {
         }
         let confirmationCode = String(format: "%04d", Int.random(in: 1000...9999))
         let attendanceData = AttendanceInsert(date_id: dateId, user_id: userId, confirmed: false, confirmation_code: confirmationCode)
-        
-        let response = try await client
+        let response = try? await client
             .from("attendance")
             .insert(attendanceData)
             .select()
             .single()
             .execute()
-        
-        let data = response.data
-        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
-        return try JSONDecoder().decode(Attendance.self, from: data)
+        if let response = response {
+            let data = response.data
+            print("Raw Supabase data (createAttendanceRecord):", String(data: data, encoding: .utf8) ?? "nil")
+            return try? JSONDecoder().decode(Attendance.self, from: data)
+        } else {
+            print("[DEBUG] No attendance row found for createAttendanceRecord")
+            return nil
+        }
     }
     
     func confirmAttendance(attendanceId: String) async throws {
