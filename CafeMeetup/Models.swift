@@ -12,7 +12,7 @@ struct User: Identifiable, Codable {
     let photo_url: String?
     let location: String?
     let bio: String?
-    let last_active_at: Date
+    let last_active_at: String?
     
     enum CodingKeys: String, CodingKey {
         case id, first_name, last_name, email, created_at, status, photo_url, location, bio, last_active_at
