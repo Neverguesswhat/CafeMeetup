@@ -23,7 +23,11 @@ class SupabaseManager {
         guard let imageData = image.jpegData(compressionQuality: 0.8) else {
             throw NSError(domain: "ImageError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Image conversion failed"])
         }
-
+        // Check image size (2MB = 2 * 1024 * 1024 bytes)
+        let maxSize: Int = 2 * 1024 * 1024
+        if imageData.count > maxSize {
+            throw NSError(domain: "ImageError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Image must be 2MB or less. Please choose a smaller image."])
+        }
         let fileName = email.replacingOccurrences(of: "@", with: "_").replacingOccurrences(of: ".", with: "_") + ".jpg"
 
         _ = try await client.storage
