@@ -297,50 +297,48 @@ struct AddContactView: View {
     @State private var errorMessage = ""
     
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Contact Information")) {
-                    TextField("Name", text: $name)
-                        .textContentType(.name)
-                    
-                    TextField("Email (Optional)", text: $email)
-                        .textContentType(.emailAddress)
-                        .keyboardType(.emailAddress)
-                        .autocapitalization(.none)
-                    
-                    TextField("Phone (Optional)", text: $phone)
-                        .textContentType(.telephoneNumber)
-                        .keyboardType(.phonePad)
-                }
+        Form {
+            Section(header: Text("Contact Information")) {
+                TextField("Name", text: $name)
+                    .textContentType(.name)
                 
-                Section(header: Text("Notes")) {
-                    TextField("Notes (Optional)", text: $notes, axis: .vertical)
-                        .lineLimit(3...6)
-                }
+                TextField("Email (Optional)", text: $email)
+                    .textContentType(.emailAddress)
+                    .keyboardType(.emailAddress)
+                    .autocapitalization(.none)
                 
-                if !errorMessage.isEmpty {
-                    Section {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .font(.caption)
-                    }
+                TextField("Phone (Optional)", text: $phone)
+                    .textContentType(.telephoneNumber)
+                    .keyboardType(.phonePad)
+            }
+            
+            Section(header: Text("Notes")) {
+                TextField("Notes (Optional)", text: $notes, axis: .vertical)
+                    .lineLimit(3...6)
+            }
+            
+            if !errorMessage.isEmpty {
+                Section {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
                 }
             }
-            .navigationTitle("Add Contact")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+        }
+        .navigationTitle("Add Contact")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveContact()
-                    }
-                    .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
+            }
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    saveContact()
                 }
+                .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
             }
         }
     }
@@ -373,42 +371,40 @@ struct QRScannerView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 24) {
-                Spacer()
-                
-                Image(systemName: "qrcode.viewfinder")
-                    .font(.system(size: 100))
-                    .foregroundColor(.blue)
-                
-                Text("QR Code Scanner")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                Text("Point your camera at a QR code to scan contact information.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-                // Placeholder for actual QR scanning functionality
-                Button("Simulate Scan") {
-                    // Simulate scanning a QR code
-                    let mockData = "John Doe|john@example.com|555-1234|Met at Kennedy School"
-                    onCodeScanned(mockData)
-                    dismiss()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                Spacer()
+        VStack(spacing: 24) {
+            Spacer()
+            
+            Image(systemName: "qrcode.viewfinder")
+                .font(.system(size: 100))
+                .foregroundColor(.blue)
+            
+            Text("QR Code Scanner")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text("Point your camera at a QR code to scan contact information.")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            // Placeholder for actual QR scanning functionality
+            Button("Simulate Scan") {
+                // Simulate scanning a QR code
+                let mockData = "John Doe|john@example.com|555-1234|Met at Kennedy School"
+                onCodeScanned(mockData)
+                dismiss()
             }
-            .navigationTitle("Scan QR Code")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+            .buttonStyle(.borderedProminent)
+            
+            Spacer()
+        }
+        .navigationTitle("Scan QR Code")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
         }

@@ -401,35 +401,33 @@ struct LocationPickerView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack {
-                SearchBar(text: $searchText, placeholder: "Search locations...")
-                
-                List(filteredLocations, id: \.self) { location in
-                    Button(action: {
-                        onLocationSelected(location)
-                        dismiss()
-                    }) {
-                        HStack {
-                            Text(location)
-                                .foregroundColor(.primary)
-                            Spacer()
-                            if location == self.location {
-                                Image(systemName: "checkmark")
-                                    .foregroundColor(.blue)
-                            }
+        VStack {
+            SearchBar(text: $searchText, placeholder: "Search locations...")
+            
+            List(filteredLocations, id: \.self) { location in
+                Button(action: {
+                    onLocationSelected(location)
+                    dismiss()
+                }) {
+                    HStack {
+                        Text(location)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        if location == self.location {
+                            Image(systemName: "checkmark")
+                                .foregroundColor(.blue)
                         }
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
+                .buttonStyle(PlainButtonStyle())
             }
-            .navigationTitle("Select Location")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+        }
+        .navigationTitle("Select Location")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
         }
@@ -447,45 +445,43 @@ struct BioEditorView: View {
     @State private var isLoading = false
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                Text("Tell us about yourself")
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                Text("Share a bit about yourself to help others get to know you better.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-                
-                TextField("Write your bio here...", text: $tempBio, axis: .vertical)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(5...10)
-                    .padding()
-                
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Edit Bio")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        onBioSaved(tempBio)
-                        dismiss()
-                    }
-                    .disabled(tempBio.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        VStack(spacing: 16) {
+            Text("Tell us about yourself")
+                .font(.headline)
+                .fontWeight(.semibold)
+            
+            Text("Share a bit about yourself to help others get to know you better.")
+                .font(.body)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+            
+            TextField("Write your bio here...", text: $tempBio, axis: .vertical)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .lineLimit(5...10)
+                .padding()
+            
+            Spacer()
+        }
+        .padding()
+        .navigationTitle("Edit Bio")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
-            .onAppear {
-                tempBio = bio
+            
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    onBioSaved(tempBio)
+                    dismiss()
+                }
+                .disabled(tempBio.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
+        }
+        .onAppear {
+            tempBio = bio
         }
     }
 }

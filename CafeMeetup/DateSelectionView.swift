@@ -277,33 +277,31 @@ struct VenuePickerView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(Array(venueOptions.enumerated()), id: \.offset) { index, venue in
-                    Button(action: {
-                        onVenueSelected(index)
-                    }) {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(venue.0)
-                                .font(.headline)
-                                .foregroundColor(.primary)
-                            
-                            Text(venue.1)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.vertical, 4)
+        List {
+            ForEach(Array(venueOptions.enumerated()), id: \.offset) { index, venue in
+                Button(action: {
+                    onVenueSelected(index)
+                }) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(venue.0)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        Text(venue.1)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .padding(.vertical, 4)
                 }
+                .buttonStyle(PlainButtonStyle())
             }
-            .navigationTitle("Select Venue")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+        }
+        .navigationTitle("Select Venue")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
         }

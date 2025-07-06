@@ -218,79 +218,77 @@ struct MessageDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    // Header
-                    VStack(alignment: .leading, spacing: 12) {
-                        HStack {
-                            Image(systemName: iconForMessageType(message.type))
-                                .font(.title)
-                                .foregroundColor(colorForMessageType(message.type))
-                                .frame(width: 50, height: 50)
-                                .background(colorForMessageType(message.type).opacity(0.1))
-                                .clipShape(Circle())
-                            
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(message.title)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                
-                                Text(message.createdAt, style: .date)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Spacer()
-                        }
-                    }
-                    .padding()
-                    .background(Color(UIColor.secondarySystemBackground))
-                    .cornerRadius(12)
-                    
-                    // Message body
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Message")
-                            .font(.headline)
-                            .fontWeight(.semibold)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // Header
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
+                        Image(systemName: iconForMessageType(message.type))
+                            .font(.title)
+                            .foregroundColor(colorForMessageType(message.type))
+                            .frame(width: 50, height: 50)
+                            .background(colorForMessageType(message.type).opacity(0.1))
+                            .clipShape(Circle())
                         
-                        Text(message.body)
-                            .font(.body)
-                            .lineSpacing(4)
-                    }
-                    .padding()
-                    .background(Color(UIColor.systemGray6))
-                    .cornerRadius(12)
-                    
-                    // Action buttons based on message type
-                    if !message.read {
-                        Button(action: {
-                            onMarkAsRead()
-                            dismiss()
-                        }) {
-                            HStack {
-                                Image(systemName: "checkmark.circle")
-                                Text("Mark as Read")
-                            }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(message.title)
+                                .font(.title2)
+                                .fontWeight(.bold)
+                            
+                            Text(message.createdAt, style: .date)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
+                        
+                        Spacer()
                     }
-                    
-                    Spacer(minLength: 40)
                 }
                 .padding()
-            }
-            .navigationTitle("Message")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                .background(Color(UIColor.secondarySystemBackground))
+                .cornerRadius(12)
+                
+                // Message body
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Message")
+                        .font(.headline)
+                        .fontWeight(.semibold)
+                    
+                    Text(message.body)
+                        .font(.body)
+                        .lineSpacing(4)
+                }
+                .padding()
+                .background(Color(UIColor.systemGray6))
+                .cornerRadius(12)
+                
+                // Action buttons based on message type
+                if !message.read {
+                    Button(action: {
+                        onMarkAsRead()
                         dismiss()
+                    }) {
+                        HStack {
+                            Image(systemName: "checkmark.circle")
+                            Text("Mark as Read")
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                     }
+                }
+                
+                Spacer(minLength: 40)
+            }
+            .padding()
+        }
+        .navigationTitle("Message")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Done") {
+                    dismiss()
                 }
             }
         }
