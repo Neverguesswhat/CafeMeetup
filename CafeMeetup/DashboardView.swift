@@ -432,8 +432,9 @@ struct DashboardView: View {
         
         Task {
             do {
-                // Load current user
+                print("[DEBUG] Loading user data...")
                 currentUser = try await SupabaseManager.shared.getCurrentUser()
+                print("[DEBUG] Loaded user: \(String(describing: currentUser))")
                 
                 // Load rejection count
                 if let user = currentUser {
@@ -456,6 +457,7 @@ struct DashboardView: View {
                     isLoading = false
                 }
             } catch {
+                print("[DEBUG] Error loading user data: \(error)")
                 await MainActor.run {
                     errorMessage = "Failed to load data: \(error.localizedDescription)"
                     isLoading = false
