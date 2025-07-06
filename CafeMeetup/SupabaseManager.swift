@@ -364,12 +364,14 @@ class SupabaseManager {
             .single()
             .execute()
         let data = response.data
-        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
+        print("Raw Supabase data (rejection_counts):", String(data: data, encoding: .utf8) ?? "nil")
         struct RejectionCountRow: Decodable { let count: Int }
         if let row = try? JSONDecoder().decode(RejectionCountRow.self, from: data) {
             return row.count
+        } else {
+            print("[DEBUG] No rejection_counts row found for user, returning 0")
+            return 0
         }
-        return 0
     }
     
     func incrementRejectionCount(for userId: String) async throws {
