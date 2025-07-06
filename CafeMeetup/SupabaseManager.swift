@@ -36,14 +36,20 @@ class SupabaseManager {
 
         let publicURL = "https://lhtudqxldzwloyyxgvrx.supabase.co/storage/v1/object/public/profile-photos/\(fileName)"
 
-        // Fetch the current user's id (Auth UID as String)
         let userId = try await client.auth.session.user.id.uuidString
+        print("[DEBUG] Auth UID for upload: \(userId)")
         struct UpdatePhoto: Encodable { let photo_url: String }
-        _ = try await client
-            .from("users")
-            .update(UpdatePhoto(photo_url: publicURL))
-            .eq("id", value: userId)
-            .execute()
+        do {
+            let response = try await client
+                .from("users")
+                .update(UpdatePhoto(photo_url: publicURL))
+                .eq("id", value: userId)
+                .execute()
+            print("[DEBUG] Update response: \(response)")
+        } catch {
+            print("[DEBUG] Update error: \(error)")
+            throw error
+        }
 
         return publicURL
     }
@@ -68,7 +74,10 @@ class SupabaseManager {
 
     // MARK: - User Management
     func getCurrentUser() async throws -> User? {
+        let userId = try await client.auth.session.user.id.uuidString
+        print("[DEBUG] Auth UID for getCurrentUser: \(userId)")
         guard let email = try await client.auth.session.user.email else {
+            print("[DEBUG] No email in session")
             return nil
         }
         
@@ -81,6 +90,7 @@ class SupabaseManager {
         
         let data = response.data
         print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
+        print("[DEBUG] getCurrentUser response: \(response)")
         return try JSONDecoder().decode(User.self, from: data)
     }
     
