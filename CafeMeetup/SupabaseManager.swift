@@ -56,19 +56,21 @@ class SupabaseManager {
 
     // ✅ Fetch stored photo URL
     func fetchUserPhotoURL(for email: String) async throws -> String? {
-        let response = try await client
+        let response = try? await client
             .from("users")
             .select("photo_url")
             .eq("email", value: email)
             .single()
             .execute()
-
-        // Decode the response properly
-        let data = response.data
-        if let userData = try? JSONDecoder().decode([String: String?].self, from: data) {
-            return userData["photo_url"] ?? nil
+        if let response = response {
+            let data = response.data
+            print("Raw Supabase data (fetchUserPhotoURL):", String(data: data, encoding: .utf8) ?? "nil")
+            if let userData = try? JSONDecoder().decode([String: String?].self, from: data) {
+                return userData["photo_url"] ?? nil
+            }
+        } else {
+            print("[DEBUG] No user row found for fetchUserPhotoURL")
         }
-        
         return nil
     }
 
@@ -80,18 +82,21 @@ class SupabaseManager {
             print("[DEBUG] No email in session")
             return nil
         }
-        
-        let response = try await client
+        let response = try? await client
             .from("users")
             .select("*")
             .eq("email", value: email)
             .single()
             .execute()
-        
-        let data = response.data
-        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
-        print("[DEBUG] getCurrentUser response: \(response)")
-        return try JSONDecoder().decode(User.self, from: data)
+        if let response = response {
+            let data = response.data
+            print("Raw Supabase data (getCurrentUser):", String(data: data, encoding: .utf8) ?? "nil")
+            print("[DEBUG] getCurrentUser response: \(response)")
+            return try? JSONDecoder().decode(User.self, from: data)
+        } else {
+            print("[DEBUG] No user row found for getCurrentUser")
+            return nil
+        }
     }
     
     func updateUserStatus(_ status: UserStatus, for email: String) async throws {
@@ -390,33 +395,37 @@ class SupabaseManager {
     }
     
     func resetRejectionCountIfNeeded(for userId: String) async throws {
-        let response = try await client
+        let response = try? await client
             .from("rejection_counts")
             .select("last_reset_date")
             .eq("user_id", value: userId)
             .single()
             .execute()
-        let data = response.data
-        print("Raw Supabase data:", String(data: data, encoding: .utf8) ?? "nil")
-        struct LastResetRow: Decodable { let last_reset_date: String }
-        if let row = try? JSONDecoder().decode(LastResetRow.self, from: data) {
-            let lastResetString = row.last_reset_date
-            if let lastReset = ISO8601DateFormatter().date(from: lastResetString) {
-                let calendar = Calendar.current
-                let daysSinceReset = calendar.dateComponents([.day], from: lastReset, to: Date()).day ?? 0
-                if daysSinceReset >= 1 {
-                    struct RejectionCountUpdate: Encodable {
-                        let count: Int
-                        let last_reset_date: String
+        if let response = response {
+            let data = response.data
+            print("Raw Supabase data (resetRejectionCountIfNeeded):", String(data: data, encoding: .utf8) ?? "nil")
+            struct LastResetRow: Decodable { let last_reset_date: String }
+            if let row = try? JSONDecoder().decode(LastResetRow.self, from: data) {
+                let lastResetString = row.last_reset_date
+                if let lastReset = ISO8601DateFormatter().date(from: lastResetString) {
+                    let calendar = Calendar.current
+                    let daysSinceReset = calendar.dateComponents([.day], from: lastReset, to: Date()).day ?? 0
+                    if daysSinceReset >= 1 {
+                        struct RejectionCountUpdate: Encodable {
+                            let count: Int
+                            let last_reset_date: String
+                        }
+                        let updateData = RejectionCountUpdate(count: 0, last_reset_date: ISO8601DateFormatter().string(from: Date()))
+                        _ = try await client
+                            .from("rejection_counts")
+                            .update(updateData)
+                            .eq("user_id", value: userId)
+                            .execute()
                     }
-                    let updateData = RejectionCountUpdate(count: 0, last_reset_date: ISO8601DateFormatter().string(from: Date()))
-                    _ = try await client
-                        .from("rejection_counts")
-                        .update(updateData)
-                        .eq("user_id", value: userId)
-                        .execute()
                 }
             }
+        } else {
+            print("[DEBUG] No rejection_counts row found for resetRejectionCountIfNeeded")
         }
     }
 }
