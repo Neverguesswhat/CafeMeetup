@@ -18,6 +18,7 @@ struct DashboardView: View {
     @State private var showAttendanceConfirmation = false
     @State private var confirmationCode = ""
     @State private var rejectionCount = 0
+    @State private var showAlert = false
     
     var body: some View {
         ScrollView {
@@ -74,6 +75,9 @@ struct DashboardView: View {
                     loadUserData()
                 }
             )
+        }
+        .alert(isPresented: $showAlert) {
+            Alert(title: Text("Upload Error"), message: Text(errorMessage), dismissButton: .default(Text("OK")))
         }
     }
     
